@@ -1,0 +1,41 @@
+{
+  "name": "@tiledev/sdk-analytics-core",
+  "version": "0.2.0",
+  "description": "Dependency-free analytics contract for TilePacket apps: the AnalyticsAdapter interface every provider implements, the DefaultEvents catalogue, and the device/event wire types. Imported by @tiledev/sdk-analytics-* and the theme's AnalyticsService, which holds the adapter list and fans calls out.",
+  "license": "UNLICENSED",
+  "private": false,
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json"
+  },
+  "keywords": [
+    "tile",
+    "tilepacket",
+    "analytics",
+    "events",
+    "tracking",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
