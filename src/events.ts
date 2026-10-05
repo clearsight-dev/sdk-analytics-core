@@ -5,6 +5,9 @@
 // (firebase `gaEventsMap`, klaviyo `transformers`, moengage `eventsMap`,
 // segment `transformers`). Every provider adapter maps THESE canonical names onto
 // its vendor's event names.
+//
+// Since 0.3.0 it also carries the names every Tile app spelled out for itself (the engine-only ones,
+// the waitlists' and the live-selling ones), so no app keeps its own copy.
 
 /** The two platform lifecycle events. Ported verbatim from `ApptileCoreEvents`. */
 export const ApptileCoreEvents = {
@@ -15,11 +18,22 @@ export const ApptileCoreEvents = {
 /**
  * The canonical event names the theme emits. Values are the exact strings the
  * platform transformers key on, so `DefaultEvents.ADD_TO_CART === 'addToCart'`.
+ *
+ * Every store's warehouse has columns named after these strings, so a value here never changes
+ * without a note for the data team: a renamed event starts a second series nobody queries.
  */
 export const DefaultEvents = {
   // lifecycle
   FIRST_OPEN: ApptileCoreEvents.FIRST_OPEN,
   APP_OPEN: ApptileCoreEvents.APP_OPEN,
+  /** The first launch after the app's version changed, instead of `apptile_app_open`. The engine's name. */
+  APP_UPDATE: 'apptile_app_update',
+
+  // push
+  /** The shopper opened a push notification. */
+  NOTIFICATION_OPEN: 'apptile_notification_open',
+  /** A push notification arrived while the app was open. */
+  NOTIFICATION_FOREGROUND: 'apptile_notification_foreground',
 
   // navigation
   PAGE_VIEW: 'pageView',
@@ -39,6 +53,10 @@ export const DefaultEvents = {
   REMOVE_FROM_CART: 'removeFromCart',
   UPDATE_CART: 'updateCart',
   VIEW_CART: 'viewCart',
+  /** After every cart write: `{ totalQuantity, numberOfProducts }`. OneSignal's Abandoned Cart tag reads it. */
+  UPDATE_CART_QUANTITY: 'updateCartQuantity',
+  /** After every cart write: `{ lineItems, actionType, cartId }`. The platform's abandoned-cart automations read it. */
+  CUSTOM_UPDATE_CART: 'customUpdateCart',
 
   // checkout / purchase
   INITIATE_CHECKOUT: 'initiateCheckout',
@@ -63,8 +81,46 @@ export const DefaultEvents = {
   // merchandising
   BANNER_CLICK: 'banner_click',
 
-  // klaviyo back-in-stock
-  BACK_IN_STOCK_SUBSCRIPTION: 'back-in-stock-subscription',
+  // waitlists
+  /**
+   * Joining the waitlist for a sold-out size: `waitlistParams`. The platform's push automations
+   * select on this exact string to send the back-in-stock push later, so here the name is the feature.
+   *
+   * Until 0.3.0 this was `back-in-stock-subscription`, hyphenated, which no automation matches: every
+   * app spelled `backInStockSubscription` itself rather than use this constant.
+   */
+  BACK_IN_STOCK_SUBSCRIPTION: 'backInStockSubscription',
+  /**
+   * Joining the waitlist for a size Cart Hold has reserved in other shoppers' carts: `waitlistParams`.
+   * Read by the same automations.
+   */
+  CART_HOLD_WAITLIST_SUBSCRIPTION: 'cartHoldWaitlistSubscription',
+
+  // live selling
+  /**
+   * A shopper watching a live show, once per show per app run: `liveJoinParams`. The tracking plan's
+   * name (the engine's widget called it `viewStream`).
+   */
+  LIVE_JOIN: 'liveJoin',
+  /**
+   * An add during a live show, credited to that show: `streamItemParams` with `streamType:
+   * 'live-stream'`. Sent beside the ordinary `addToCart`, so the store's numbers stay whole while the
+   * show gets credit for what it sold. `showAddToCartEvent` picks this name or the next.
+   */
+  STREAM_ADD_TO_CART: 'streamAddToCart',
+  /**
+   * An add from a show's recording: `streamItemParams` with `streamType: 'replay'`. Its own name, so
+   * what the recordings sold is counted apart from what the show sold live (Freckled Poppy's names,
+   * decided 2026-10-06, Head of Engineering). `streamId` joins the two back together.
+   */
+  REPLAY_ADD_TO_CART: 'replayAddToCart',
+  /**
+   * Checkout started on a cart holding units a show put there: `streamCheckoutParams`. Sent beside
+   * `initiateCheckout`, never instead of it, and only when the cart holds a show's units.
+   */
+  STREAM_CHECKOUT: 'streamCheckout',
+  /** The order for such a cart was placed: `streamPurchaseParams`, beside `purchase`. */
+  STREAM_PURCHASE: 'streamPurchase',
 } as const;
 
 export type DefaultEventName = (typeof DefaultEvents)[keyof typeof DefaultEvents];

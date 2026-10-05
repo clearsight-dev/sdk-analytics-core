@@ -1,7 +1,7 @@
 {
   "name": "@tiledev/sdk-analytics-core",
-  "version": "0.2.1",
-  "description": "Dependency-free analytics contract for TilePacket apps: the AnalyticsAdapter interface every provider implements, the DefaultEvents catalogue, and the device/event wire types. Imported by @tiledev/sdk-analytics-* and the theme's AnalyticsService, which holds the adapter list and fans calls out.",
+  "version": "0.3.0",
+  "description": "Dependency-free analytics contract for TilePacket apps: the AnalyticsAdapter interface every provider implements, the DefaultEvents catalogue, the device/event wire types, and the builders for what each event carries (the Apptile engine's payloads, from Shopify objects). Imported by @tiledev/sdk-analytics-* and the app's analytics provider.",
   "license": "UNLICENSED",
   "private": false,
   "sideEffects": false,
@@ -16,12 +16,14 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc -p tsconfig.json",
     "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "npm run build && node test/event-params.test.mjs",
     "prepublishOnly": "node -e \"if(!require('fs').existsSync('dist/index.js')){console.error('\\n  REFUSING TO PUBLISH: dist/index.js is missing. Run: npm run build\\n  (build is clean+tsc; if tsc is not installed the clean still runs and empties dist)\\n');process.exit(1)}\""
   },
   "keywords": [

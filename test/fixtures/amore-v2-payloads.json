@@ -1,0 +1,334 @@
+{
+  "Events": {
+    "PAGE_VIEW": "pageView",
+    "FIRST_OPEN": "apptile_first_open",
+    "APP_OPEN": "apptile_app_open",
+    "APP_UPDATE": "apptile_app_update",
+    "PRODUCT_VIEW": "productView",
+    "COLLECTION_VIEW": "collectionView",
+    "VIEW_CART": "viewCart",
+    "INITIATE_CHECKOUT": "initiateCheckout",
+    "PURCHASE": "purchase",
+    "SEARCH": "search",
+    "NOTIFICATION_OPEN": "apptile_notification_open",
+    "NOTIFICATION_FOREGROUND": "apptile_notification_foreground",
+    "ADD_TO_WISHLIST": "addToWishlist",
+    "REMOVE_FROM_WISHLIST": "removeFromWishlist",
+    "ADD_TO_CART": "addToCart",
+    "REMOVE_FROM_CART": "removeFromCart",
+    "UPDATE_CART": "updateCart",
+    "LOGIN": "login",
+    "LOGOUT": "logout",
+    "CUSTOMER_LOGIN": "customerLogIn",
+    "UPDATE_CART_QUANTITY": "updateCartQuantity",
+    "CUSTOM_UPDATE_CART": "customUpdateCart",
+    "BACK_IN_STOCK": "backInStockSubscription",
+    "CART_HOLD_WAITLIST": "cartHoldWaitlistSubscription",
+    "STREAM_ADD_TO_CART": "streamAddToCart",
+    "LIVE_JOIN": "liveJoin"
+  },
+  "payloads": {
+    "productParams(product)": {
+      "productId": "gid://shopify/Product/1",
+      "title": "Blue Dress",
+      "currency": "USD",
+      "price": 15,
+      "brand": "Amore",
+      "productType": "Dresses",
+      "available": true
+    },
+    "productParams(product, variant)": {
+      "productId": "gid://shopify/Product/1",
+      "title": "Blue Dress",
+      "currency": "USD",
+      "price": 19.5,
+      "brand": "Amore",
+      "productType": "Dresses",
+      "available": true
+    },
+    "productParams(productWithoutVendor, null)": {
+      "productId": "gid://shopify/Product/2",
+      "title": "Blue Dress",
+      "currency": "USD",
+      "price": 15,
+      "brand": null,
+      "productType": null,
+      "available": false
+    },
+    "checkoutParams(cart)": {
+      "currency": "USD",
+      "totalItems": 2,
+      "totalValue": 46,
+      "items": [
+        {
+          "productId": "gid://shopify/Product/1",
+          "title": "Blue Dress",
+          "currency": "USD",
+          "variantTitle": "Medium / Blue",
+          "variantId": "gid://shopify/ProductVariant/111",
+          "price": 19.5,
+          "quantity": 2,
+          "brand": null,
+          "productType": null
+        },
+        {
+          "productId": null,
+          "title": null,
+          "currency": "USD",
+          "variantTitle": "Default Title",
+          "variantId": "gid://shopify/ProductVariant/222",
+          "price": 7,
+          "quantity": 1,
+          "brand": null,
+          "productType": null
+        }
+      ]
+    },
+    "checkoutParams(emptyCart)": {
+      "currency": "USD",
+      "totalItems": 0,
+      "totalValue": 0,
+      "items": []
+    },
+    "checkoutParams(null)": {
+      "currency": "",
+      "totalItems": 0,
+      "totalValue": 0,
+      "items": []
+    },
+    "purchaseParams(cart)": {
+      "items": [
+        {
+          "productId": "gid://shopify/Product/1",
+          "title": "Blue Dress",
+          "currency": "USD",
+          "variantTitle": "Medium / Blue",
+          "variantId": "gid://shopify/ProductVariant/111",
+          "price": 19.5,
+          "quantity": 2,
+          "brand": null,
+          "productType": null
+        },
+        {
+          "productId": null,
+          "title": null,
+          "currency": "USD",
+          "variantTitle": "Default Title",
+          "variantId": "gid://shopify/ProductVariant/222",
+          "price": 7,
+          "quantity": 1,
+          "brand": null,
+          "productType": null
+        }
+      ],
+      "orderId": "gid://shopify/Cart/abc",
+      "orderName": "gid://shopify/Cart/abc",
+      "totalValue": 49.68,
+      "currency": "USD",
+      "totalItems": 2,
+      "taxPrice": 3.68
+    },
+    "purchaseParams(cartWithoutTax)": {
+      "items": [
+        {
+          "productId": "gid://shopify/Product/1",
+          "title": "Blue Dress",
+          "currency": "USD",
+          "variantTitle": "Medium / Blue",
+          "variantId": "gid://shopify/ProductVariant/111",
+          "price": 19.5,
+          "quantity": 2,
+          "brand": null,
+          "productType": null
+        },
+        {
+          "productId": null,
+          "title": null,
+          "currency": "USD",
+          "variantTitle": "Medium / Blue",
+          "variantId": "gid://shopify/ProductVariant/333",
+          "price": 19.5,
+          "quantity": 0,
+          "brand": null,
+          "productType": null
+        }
+      ],
+      "orderId": "gid://shopify/Cart/notax",
+      "orderName": "gid://shopify/Cart/notax",
+      "totalValue": 39,
+      "currency": "USD",
+      "totalItems": 2,
+      "taxPrice": 0
+    },
+    "purchaseParams(null)": {
+      "items": [],
+      "orderId": null,
+      "orderName": null,
+      "totalValue": 0,
+      "currency": "",
+      "totalItems": 0,
+      "taxPrice": 0
+    },
+    "cartCurrency(cart)": "USD",
+    "cartCurrency(null)": "",
+    "lineItem(lineWithProduct)": {
+      "productId": "gid://shopify/Product/1",
+      "title": "Blue Dress",
+      "currency": "USD",
+      "variantTitle": "Medium / Blue",
+      "variantId": "gid://shopify/ProductVariant/111",
+      "price": 19.5,
+      "quantity": 2,
+      "brand": null,
+      "productType": null
+    },
+    "lineItem(lineWithoutProduct)": {
+      "productId": null,
+      "title": null,
+      "currency": "USD",
+      "variantTitle": "Default Title",
+      "variantId": "gid://shopify/ProductVariant/222",
+      "price": 7,
+      "quantity": 1,
+      "brand": null,
+      "productType": null
+    },
+    "cartQuantityParams(cart)": {
+      "totalQuantity": 3,
+      "numberOfProducts": 2
+    },
+    "cartQuantityParams(cartWithoutTax)": {
+      "totalQuantity": 2,
+      "numberOfProducts": 1
+    },
+    "cartQuantityParams(null)": {
+      "totalQuantity": 0,
+      "numberOfProducts": 0
+    },
+    "customCartParams(cart, add)": {
+      "lineItems": [
+        {
+          "merchandiseId": "gid://shopify/ProductVariant/111",
+          "quantity": 2,
+          "productId": "gid://shopify/Product/1",
+          "title": "Blue Dress"
+        },
+        {
+          "merchandiseId": "gid://shopify/ProductVariant/222",
+          "quantity": 1,
+          "productId": null,
+          "title": null
+        }
+      ],
+      "actionType": "add",
+      "cartId": "gid://shopify/Cart/abc"
+    },
+    "customCartParams(cart, update)": {
+      "lineItems": [
+        {
+          "merchandiseId": "gid://shopify/ProductVariant/111",
+          "quantity": 2,
+          "productId": "gid://shopify/Product/1",
+          "title": "Blue Dress"
+        },
+        {
+          "merchandiseId": "gid://shopify/ProductVariant/222",
+          "quantity": 1,
+          "productId": null,
+          "title": null
+        }
+      ],
+      "actionType": "update",
+      "cartId": "gid://shopify/Cart/abc"
+    },
+    "customCartParams(null, remove)": {
+      "lineItems": [],
+      "actionType": "remove",
+      "cartId": null
+    },
+    "authParams(customer)": {
+      "userId": "gid://shopify/Customer/9",
+      "firstName": "Ann",
+      "lastName": "Bee",
+      "emailId": "a@b.c",
+      "contactNumber": "+15550001"
+    },
+    "authParams(customerWithNulls)": {
+      "userId": "gid://shopify/Customer/10",
+      "firstName": "",
+      "lastName": "",
+      "emailId": "",
+      "contactNumber": ""
+    },
+    "waitlistParams(product, variant, customer)": {
+      "variantId": "gid://shopify/ProductVariant/111",
+      "productId": "gid://shopify/Product/1",
+      "productTitle": "Blue Dress",
+      "productHandle": "blue-dress",
+      "featuredImage": "https://cdn.example/blue.jpg",
+      "variantTitle": "Medium / Blue",
+      "customerId": "gid://shopify/Customer/9",
+      "customerEmail": "a@b.c"
+    },
+    "waitlistParams(productWithoutVendor, variant, null)": {
+      "variantId": "gid://shopify/ProductVariant/111",
+      "productId": "gid://shopify/Product/2",
+      "productTitle": "Blue Dress",
+      "productHandle": "blue-dress",
+      "featuredImage": "",
+      "variantTitle": "Medium / Blue",
+      "customerId": "",
+      "customerEmail": ""
+    },
+    "liveJoinParams(stream-1, 42)": {
+      "streamId": "stream-1",
+      "count": 42,
+      "streamType": "live-stream",
+      "streamFrom": "broadcaster-app"
+    },
+    "streamItemParams(product, variant, live-1)": {
+      "currency": "USD",
+      "price": 19.5,
+      "productId": "gid://shopify/Product/1",
+      "quantity": 1,
+      "title": "Blue Dress",
+      "variantId": "gid://shopify/ProductVariant/111",
+      "variantTitle": "Medium / Blue",
+      "streamId": "live-1",
+      "streamType": "live-stream"
+    },
+    "streamItemParams(product, variant, live-1, live-stream)": {
+      "currency": "USD",
+      "price": 19.5,
+      "productId": "gid://shopify/Product/1",
+      "quantity": 1,
+      "title": "Blue Dress",
+      "variantId": "gid://shopify/ProductVariant/111",
+      "variantTitle": "Medium / Blue",
+      "streamId": "live-1",
+      "streamType": "live-stream"
+    },
+    "streamItemParams(product, variant, replay-feed-1, replay)": {
+      "currency": "USD",
+      "price": 19.5,
+      "productId": "gid://shopify/Product/1",
+      "quantity": 1,
+      "title": "Blue Dress",
+      "variantId": "gid://shopify/ProductVariant/111",
+      "variantTitle": "Medium / Blue",
+      "streamId": "replay-feed-1",
+      "streamType": "replay"
+    },
+    "streamItemParams(product, null, null)": {
+      "currency": "USD",
+      "price": 15,
+      "productId": "gid://shopify/Product/1",
+      "quantity": 1,
+      "title": "Blue Dress",
+      "variantId": null,
+      "variantTitle": null,
+      "streamId": null,
+      "streamType": "live-stream"
+    }
+  }
+}
