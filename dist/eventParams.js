@@ -206,7 +206,7 @@ function streamPurchaseParams(cart, shows) {
 }
 /**
  * The events the engine reported for a cart or wishlist change, in order, for an sdk-shopify event.
- * Anything else (sign-in, alerts, checkout) is `[]`: sign-in is the app's to report, because it
+ * Anything else (sign-in, alerts, a placed order) is `[]`: sign-in is the app's to report, because it
  * depends on how the app signs shoppers in.
  *
  * - `cart:add`: for each line that grew, `updateCart` then `addToCart`, both with the line as it is now
@@ -215,9 +215,13 @@ function streamPurchaseParams(cart, shows) {
  * - `cart:remove`: for each line that went, `removeFromCart` with `quantity` = how many went; then
  *   `updateCartQuantity` and `customUpdateCart`.
  * - `wishlist:add` / `wishlist:remove`: `addToWishlist` / `removeFromWishlist` with `{ productId }`.
+ * - `cart:viewed` (sdk-shopify 0.14.0's `useCartPage().viewed()`): `viewCart` with `checkoutParams`.
+ * - `checkout:started` (its `checkout.start()`): `initiateCheckout` with `checkoutParams`, then
+ *   `streamCheckout` beside it when the cart holds a show's units (`shows`; Freckled Poppy's event).
+ *   Both moved from amore-v2's Cart, which sent them itself (0.3.1).
  */
 function cartAndWishlistEvents(event) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f;
     const toSend = [];
     if (event.type === 'cart:add' || event.type === 'cart:update' || event.type === 'cart:remove') {
         const cart = (_a = event.cart) !== null && _a !== void 0 ? _a : null;
@@ -240,11 +244,23 @@ function cartAndWishlistEvents(event) {
         toSend.push({ name: events_1.DefaultEvents.CUSTOM_UPDATE_CART, properties: customCartParams(cart, actionType) });
         return toSend;
     }
+    if (event.type === 'cart:viewed') {
+        toSend.push({ name: events_1.DefaultEvents.VIEW_CART, properties: checkoutParams((_c = event.cart) !== null && _c !== void 0 ? _c : null) });
+        return toSend;
+    }
+    if (event.type === 'checkout:started') {
+        const cart = (_d = event.cart) !== null && _d !== void 0 ? _d : null;
+        toSend.push({ name: events_1.DefaultEvents.INITIATE_CHECKOUT, properties: checkoutParams(cart) });
+        if (event.shows && cartHasShows(event.shows)) {
+            toSend.push({ name: events_1.DefaultEvents.STREAM_CHECKOUT, properties: streamCheckoutParams(cart, event.shows) });
+        }
+        return toSend;
+    }
     if (event.type === 'wishlist:add') {
-        toSend.push({ name: events_1.DefaultEvents.ADD_TO_WISHLIST, properties: { productId: (_c = event.productId) !== null && _c !== void 0 ? _c : null } });
+        toSend.push({ name: events_1.DefaultEvents.ADD_TO_WISHLIST, properties: { productId: (_e = event.productId) !== null && _e !== void 0 ? _e : null } });
     }
     if (event.type === 'wishlist:remove') {
-        toSend.push({ name: events_1.DefaultEvents.REMOVE_FROM_WISHLIST, properties: { productId: (_d = event.productId) !== null && _d !== void 0 ? _d : null } });
+        toSend.push({ name: events_1.DefaultEvents.REMOVE_FROM_WISHLIST, properties: { productId: (_f = event.productId) !== null && _f !== void 0 ? _f : null } });
     }
     return toSend;
 }

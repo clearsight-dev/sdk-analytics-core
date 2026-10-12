@@ -290,11 +290,13 @@ export type ShopifyEventForAnalytics = {
   cart?: CartForEvents | null;
   changedLines?: CartLineChangeForEvents[];
   productId?: string;
+  /** The shows the cart holds units from, on sdk-shopify's `checkout:started` (0.14.0). */
+  shows?: ShowsInCart;
 };
 
 /**
  * The events the engine reported for a cart or wishlist change, in order, for an sdk-shopify event.
- * Anything else (sign-in, alerts, checkout) is `[]`: sign-in is the app's to report, because it
+ * Anything else (sign-in, alerts, a placed order) is `[]`: sign-in is the app's to report, because it
  * depends on how the app signs shoppers in.
  *
  * - `cart:add`: for each line that grew, `updateCart` then `addToCart`, both with the line as it is now
@@ -303,6 +305,10 @@ export type ShopifyEventForAnalytics = {
  * - `cart:remove`: for each line that went, `removeFromCart` with `quantity` = how many went; then
  *   `updateCartQuantity` and `customUpdateCart`.
  * - `wishlist:add` / `wishlist:remove`: `addToWishlist` / `removeFromWishlist` with `{ productId }`.
+ * - `cart:viewed` (sdk-shopify 0.14.0's `useCartPage().viewed()`): `viewCart` with `checkoutParams`.
+ * - `checkout:started` (its `checkout.start()`): `initiateCheckout` with `checkoutParams`, then
+ *   `streamCheckout` beside it when the cart holds a show's units (`shows`; Freckled Poppy's event).
+ *   Both moved from amore-v2's Cart, which sent them itself (0.3.1).
  */
 export function cartAndWishlistEvents(event: ShopifyEventForAnalytics): EventToSend[] {
   const toSend: EventToSend[] = [];
@@ -328,6 +334,19 @@ export function cartAndWishlistEvents(event: ShopifyEventForAnalytics): EventToS
 
     toSend.push({ name: DefaultEvents.UPDATE_CART_QUANTITY, properties: cartQuantityParams(cart) });
     toSend.push({ name: DefaultEvents.CUSTOM_UPDATE_CART, properties: customCartParams(cart, actionType) });
+    return toSend;
+  }
+
+  if (event.type === 'cart:viewed') {
+    toSend.push({ name: DefaultEvents.VIEW_CART, properties: checkoutParams(event.cart ?? null) });
+    return toSend;
+  }
+  if (event.type === 'checkout:started') {
+    const cart = event.cart ?? null;
+    toSend.push({ name: DefaultEvents.INITIATE_CHECKOUT, properties: checkoutParams(cart) });
+    if (event.shows && cartHasShows(event.shows)) {
+      toSend.push({ name: DefaultEvents.STREAM_CHECKOUT, properties: streamCheckoutParams(cart, event.shows) });
+    }
     return toSend;
   }
 

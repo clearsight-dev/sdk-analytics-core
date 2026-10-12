@@ -120,7 +120,21 @@ check('wishlist:add and wishlist:remove carry the product', () => {
 check('a wishlist event without its product reports productId null, as the diff did when it found none', () => {
   assert.deepStrictEqual(sdk.cartAndWishlistEvents({ type: 'wishlist:add' }), [{ name: 'addToWishlist', properties: { productId: null } }]);
 });
-check('sign-in, alerts and checkout report nothing here', () => {
+check('cart:viewed: viewCart with the checkout params (sdk-shopify 0.14 useCartPage().viewed())', () => {
+  assert.deepStrictEqual(sdk.cartAndWishlistEvents({ type: 'cart:viewed', cart }), [{ name: 'viewCart', properties: sdk.checkoutParams(cart) }]);
+  assert.deepStrictEqual(sdk.cartAndWishlistEvents({ type: 'cart:viewed' }), [{ name: 'viewCart', properties: sdk.checkoutParams(null) }]);
+});
+check('checkout:started: initiateCheckout, and streamCheckout beside it only for a cart holding a show\'s units', () => {
+  const none = { live: [], replay: [] };
+  assert.deepStrictEqual(names(sdk.cartAndWishlistEvents({ type: 'checkout:started', cart, shows: none })), ['initiateCheckout']);
+  assert.deepStrictEqual(names(sdk.cartAndWishlistEvents({ type: 'checkout:started', cart })), ['initiateCheckout']);
+  const shows = { live: ['dn9hva23ii'], replay: [] };
+  const sent = sdk.cartAndWishlistEvents({ type: 'checkout:started', cart, shows });
+  assert.deepStrictEqual(names(sent), ['initiateCheckout', 'streamCheckout']);
+  assert.deepStrictEqual(sent[0].properties, sdk.checkoutParams(cart));
+  assert.deepStrictEqual(sent[1].properties, sdk.streamCheckoutParams(cart, shows));
+});
+check('sign-in, alerts and a placed order report nothing here', () => {
   for (const type of ['auth:loginSuccess', 'auth:logout', 'cart:outOfStock', 'cart:limitExceeded', 'checkout:orderPlaced', 'waitlist:add']) {
     assert.deepStrictEqual(sdk.cartAndWishlistEvents({ type, cart }), [], type);
   }

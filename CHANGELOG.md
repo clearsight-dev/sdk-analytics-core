@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1 (2026-10-12)
+
+- **`cartAndWishlistEvents` reports sdk-shopify 0.14.0's cart page events:** `cart:viewed` → `viewCart`,
+  `checkout:started` → `initiateCheckout`, and `streamCheckout` beside it when the event's `shows` hold a
+  show's units. Moved from amore-v2's Cart, which sent them itself; an app's existing analytics bridge
+  (`useShopifyEvents` → `cartAndWishlistEvents`) now reports them with no change. A patch, so
+  sdk-analytics-apptile's `^0.3.0` peer takes it. Tests: 2 more in `test/event-params.test.mjs`.
+
 ## 0.3.0 (2026-10-06)
 
 SDK move 7 (2026-10-06): the event names and payload builders every Tile app
