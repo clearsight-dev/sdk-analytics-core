@@ -1,6 +1,6 @@
 {
   "name": "@tiledev/sdk-analytics-core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Dependency-free analytics contract for TilePacket apps: the AnalyticsAdapter interface every provider implements, the DefaultEvents catalogue, the device/event wire types, and the builders for what each event carries (the Apptile engine's payloads, from Shopify objects). Imported by @tiledev/sdk-analytics-* and the app's analytics provider.",
   "license": "UNLICENSED",
   "private": false,

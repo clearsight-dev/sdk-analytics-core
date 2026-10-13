@@ -21,6 +21,9 @@ exports.cartQuantityParams = cartQuantityParams;
 exports.customCartParams = customCartParams;
 exports.authParams = authParams;
 exports.waitlistParams = waitlistParams;
+exports.waitlistSubscriptionEvent = waitlistSubscriptionEvent;
+exports.collectionViewParams = collectionViewParams;
+exports.searchParams = searchParams;
 exports.liveJoinParams = liveJoinParams;
 exports.streamItemParams = streamItemParams;
 exports.showAddToCartEvent = showAddToCartEvent;
@@ -160,6 +163,38 @@ function waitlistParams(product, variant, customer) {
     };
 }
 /**
+ * The event for a size the shopper just joined the waitlist for (0.3.2, from amore-v2's product page):
+ * `cartHoldWaitlistSubscription` for one waiting on other shoppers' carts to let go, else
+ * `backInStockSubscription` (a pre-order included: sold out at Shopify). The platform's push automation
+ * selects on these. sdk-shopify 0.15's `onJoinedWaitlist` hands over exactly this shape.
+ */
+function waitlistSubscriptionEvent(joined) {
+    return {
+        name: joined.waitingFor === 'otherCarts' ? events_1.DefaultEvents.CART_HOLD_WAITLIST_SUBSCRIPTION : events_1.DefaultEvents.BACK_IN_STOCK_SUBSCRIPTION,
+        properties: waitlistParams(joined.product, joined.variant, joined.customer),
+    };
+}
+// ─── Listings ─────────────────────────────────────────────────────────────────
+/**
+ * `collectionView`'s properties (0.3.2, from amore-v2's Collection page; production's shape): the
+ * collection's handle, its title (the handle while it has none: production meant to, but sent an empty
+ * one), the products' currency and each product. sdk-shopify 0.15's `useCollectionPage` `onView` hands
+ * over exactly this shape.
+ */
+function collectionViewParams(collection) {
+    var _a, _b;
+    return {
+        listId: collection.handle,
+        listName: collection.title || collection.handle,
+        currency: (_b = (_a = collection.products[0]) === null || _a === void 0 ? void 0 : _a.priceRange.min.currencyCode) !== null && _b !== void 0 ? _b : '',
+        items: collection.products.map((product) => productParams(product)),
+    };
+}
+/** `search`'s properties (0.3.2): the term searched and every match counted (sdk-shopify 0.15's `onSearched`). */
+function searchParams(search) {
+    return { term: search.term, totalItemsSearch: search.totalCount };
+}
+/**
  * `liveJoin`'s properties: the show's streaming id, the viewer count as it stood on arrival, and the
  * engine widget's constants for the type and source, so its dashboard rows aggregate with these.
  */
@@ -206,7 +241,7 @@ function streamPurchaseParams(cart, shows) {
 }
 /**
  * The events the engine reported for a cart or wishlist change, in order, for an sdk-shopify event.
- * Anything else (sign-in, alerts, a placed order) is `[]`: sign-in is the app's to report, because it
+ * Anything else (sign-in, alerts, `checkout:orderPlaced`) is `[]`: sign-in is the app's to report, because it
  * depends on how the app signs shoppers in.
  *
  * - `cart:add`: for each line that grew, `updateCart` then `addToCart`, both with the line as it is now
@@ -219,9 +254,13 @@ function streamPurchaseParams(cart, shows) {
  * - `checkout:started` (its `checkout.start()`): `initiateCheckout` with `checkoutParams`, then
  *   `streamCheckout` beside it when the cart holds a show's units (`shows`; Freckled Poppy's event).
  *   Both moved from amore-v2's Cart, which sent them itself (0.3.1).
+ * - `checkout:completed` (sdk-shopify 0.15.0's checkout page saw the order placed, with the cart as it
+ *   was): `purchase` with `purchaseParams`, then `streamPurchase` beside it for a show's units. A checkout
+ *   of its own link (no cart) sends `purchase` with its `source` alone (`auctionWins`). Moved from
+ *   amore-v2's Checkout page (0.3.2). `checkout:orderPlaced`, which every app raises its own way, stays `[]`.
  */
 function cartAndWishlistEvents(event) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g;
     const toSend = [];
     if (event.type === 'cart:add' || event.type === 'cart:update' || event.type === 'cart:remove') {
         const cart = (_a = event.cart) !== null && _a !== void 0 ? _a : null;
@@ -256,11 +295,23 @@ function cartAndWishlistEvents(event) {
         }
         return toSend;
     }
+    if (event.type === 'checkout:completed') {
+        const cart = (_e = event.cart) !== null && _e !== void 0 ? _e : null;
+        if (!cart) {
+            toSend.push({ name: events_1.DefaultEvents.PURCHASE, properties: event.source ? { source: event.source } : {} });
+            return toSend;
+        }
+        toSend.push({ name: events_1.DefaultEvents.PURCHASE, properties: purchaseParams(cart) });
+        if (event.shows && cartHasShows(event.shows)) {
+            toSend.push({ name: events_1.DefaultEvents.STREAM_PURCHASE, properties: streamPurchaseParams(cart, event.shows) });
+        }
+        return toSend;
+    }
     if (event.type === 'wishlist:add') {
-        toSend.push({ name: events_1.DefaultEvents.ADD_TO_WISHLIST, properties: { productId: (_e = event.productId) !== null && _e !== void 0 ? _e : null } });
+        toSend.push({ name: events_1.DefaultEvents.ADD_TO_WISHLIST, properties: { productId: (_f = event.productId) !== null && _f !== void 0 ? _f : null } });
     }
     if (event.type === 'wishlist:remove') {
-        toSend.push({ name: events_1.DefaultEvents.REMOVE_FROM_WISHLIST, properties: { productId: (_f = event.productId) !== null && _f !== void 0 ? _f : null } });
+        toSend.push({ name: events_1.DefaultEvents.REMOVE_FROM_WISHLIST, properties: { productId: (_g = event.productId) !== null && _g !== void 0 ? _g : null } });
     }
     return toSend;
 }

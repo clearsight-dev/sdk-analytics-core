@@ -134,6 +134,42 @@ check('checkout:started: initiateCheckout, and streamCheckout beside it only for
   assert.deepStrictEqual(sent[0].properties, sdk.checkoutParams(cart));
   assert.deepStrictEqual(sent[1].properties, sdk.streamCheckoutParams(cart, shows));
 });
+check('checkout:completed: purchase, and streamPurchase beside it for a show\'s units (0.3.2, sdk-shopify 0.15 useCheckoutPage)', () => {
+  assert.deepStrictEqual(sdk.cartAndWishlistEvents({ type: 'checkout:completed', cart, shows: { live: [], replay: [] } }), [
+    { name: 'purchase', properties: sdk.purchaseParams(cart) },
+  ]);
+  const shows = { live: [], replay: ['dn9hva23ii'] };
+  const sent = sdk.cartAndWishlistEvents({ type: 'checkout:completed', cart, shows });
+  assert.deepStrictEqual(names(sent), ['purchase', 'streamPurchase']);
+  assert.deepStrictEqual(sent[1].properties, sdk.streamPurchaseParams(cart, shows));
+});
+check('checkout:completed for a checkout of its own link (no cart): purchase with its source alone', () => {
+  assert.deepStrictEqual(sdk.cartAndWishlistEvents({ type: 'checkout:completed', source: 'auctionWins' }), [
+    { name: 'purchase', properties: { source: 'auctionWins' } },
+  ]);
+});
+check('collectionView: the handle, the title (the handle while there is none), the currency and each product', () => {
+  const dress = { id: 'P1', title: 'Dress', priceRange: { min: { amount: '58.0', currencyCode: 'USD' } }, vendor: 'Amore', availableForSale: true };
+  assert.deepStrictEqual(sdk.collectionViewParams({ handle: 'tops', title: 'Tops', products: [dress] }), {
+    listId: 'tops', listName: 'Tops', currency: 'USD', items: [sdk.productParams(dress)],
+  });
+  assert.equal(sdk.collectionViewParams({ handle: 'tops', title: null, products: [] }).listName, 'tops');
+  assert.equal(sdk.collectionViewParams({ handle: 'tops', title: '', products: [] }).currency, '');
+});
+check('search: the term and every match', () => {
+  assert.deepStrictEqual(sdk.searchParams({ term: 'dress', totalCount: 42 }), { term: 'dress', totalItemsSearch: 42 });
+});
+check('a waitlist join: cartHoldWaitlistSubscription waiting on other carts, else backInStockSubscription', () => {
+  const joined = {
+    product: { id: 'P1', title: 'Dress', handle: 'dress', featuredImage: { url: 'https://cdn/dress.jpg' } },
+    variant: { id: 'V1', title: 'M' },
+    customer: { id: 'C1', email: 'a@b.co' },
+  };
+  const restock = sdk.waitlistSubscriptionEvent({ ...joined, waitingFor: 'restock' });
+  assert.equal(restock.name, 'backInStockSubscription');
+  assert.deepStrictEqual(restock.properties, sdk.waitlistParams(joined.product, joined.variant, joined.customer));
+  assert.equal(sdk.waitlistSubscriptionEvent({ ...joined, waitingFor: 'otherCarts' }).name, 'cartHoldWaitlistSubscription');
+});
 check('sign-in, alerts and a placed order report nothing here', () => {
   for (const type of ['auth:loginSuccess', 'auth:logout', 'cart:outOfStock', 'cart:limitExceeded', 'checkout:orderPlaced', 'waitlist:add']) {
     assert.deepStrictEqual(sdk.cartAndWishlistEvents({ type, cart }), [], type);

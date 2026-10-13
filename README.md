@@ -95,6 +95,13 @@ Apptile engine's, kept on purpose: `emailId`, `contactNumber`, `merchandiseId`, 
 | `streamItemParams(product, variant, streamId, streamType = "live-stream")` | a show's add | `currency, price, productId, quantity: 1, title, variantId, variantTitle, streamId, streamType` |
 | `streamCheckoutParams(cart, shows)` | `streamCheckout` | `checkoutParams(cart)` plus `streamIds, replayIds` |
 | `streamPurchaseParams(cart, shows)` | `streamPurchase` | `purchaseParams(cart)` plus `streamIds, replayIds` |
+| `collectionViewParams({ handle, title, products })` (0.3.2) | `collectionView` | `listId` (handle), `listName` (title, else handle), `currency`, `items` (`productParams` each) |
+| `searchParams({ term, totalCount })` (0.3.2) | `search` | `term, totalItemsSearch` |
+| `waitlistSubscriptionEvent({ product, variant, customer, waitingFor })` (0.3.2) | `cartHoldWaitlistSubscription` (`otherCarts`) or `backInStockSubscription` | `{ name, properties: waitlistParams(…) }` |
+
+`cartAndWishlistEvents` also reports sdk-shopify 0.15's `checkout:completed` (0.3.2): `purchase`, and
+`streamPurchase` for a cart holding a show's units; `purchase` with `{ source }` alone for a checkout of
+its own link.
 
 ### A show's add
 

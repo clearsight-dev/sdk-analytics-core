@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.2 (2026-10-13)
+
+What amore-v2's page hooks reported themselves, moved here with sdk-shopify 0.15's page models:
+
+- **`cartAndWishlistEvents` reports `checkout:completed`** (sdk-shopify 0.15's checkout page saw the order
+  placed, with the cart as it was): `purchase` with `purchaseParams`, and `streamPurchase` beside it for a
+  cart holding a show's units; a checkout of its own link (no cart) sends `purchase` with its `source`
+  (`auctionWins`). `checkout:orderPlaced` still reports nothing. An app that sent `purchase` itself from
+  that page stops doing so when it moves to `useCheckoutPage`.
+- **`collectionViewParams(collection)`** and **`searchParams(search)`**: production's `collectionView` and
+  `search`, from what sdk-shopify 0.15's `useCollectionPage` `onView` and `useSearchPage` `onSearched` hand
+  over.
+- **`waitlistSubscriptionEvent(joined)`**: `cartHoldWaitlistSubscription` for a size waiting on other
+  carts, else `backInStockSubscription`, from sdk-shopify 0.15's `onJoinedWaitlist`.
+- Tests: 5 more in `test/event-params.test.mjs`.
+
 ## 0.3.1 (2026-10-12)
 
 - **`cartAndWishlistEvents` reports sdk-shopify 0.14.0's cart page events:** `cart:viewed` → `viewCart`,

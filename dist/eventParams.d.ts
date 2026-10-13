@@ -98,6 +98,34 @@ export declare function authParams(customer: CustomerForEvents): EventProperties
  * joining a waitlist needs sign-in.
  */
 export declare function waitlistParams(product: Pick<ProductForEvents, 'id' | 'title' | 'handle' | 'featuredImage'>, variant: Pick<VariantForEvents, 'id' | 'title'>, customer: Pick<CustomerForEvents, 'id' | 'email'> | null): EventProperties;
+/**
+ * The event for a size the shopper just joined the waitlist for (0.3.2, from amore-v2's product page):
+ * `cartHoldWaitlistSubscription` for one waiting on other shoppers' carts to let go, else
+ * `backInStockSubscription` (a pre-order included: sold out at Shopify). The platform's push automation
+ * selects on these. sdk-shopify 0.15's `onJoinedWaitlist` hands over exactly this shape.
+ */
+export declare function waitlistSubscriptionEvent(joined: {
+    product: Pick<ProductForEvents, 'id' | 'title' | 'handle' | 'featuredImage'>;
+    variant: Pick<VariantForEvents, 'id' | 'title'>;
+    customer: Pick<CustomerForEvents, 'id' | 'email'> | null;
+    waitingFor: 'restock' | 'otherCarts';
+}): EventToSend;
+/**
+ * `collectionView`'s properties (0.3.2, from amore-v2's Collection page; production's shape): the
+ * collection's handle, its title (the handle while it has none: production meant to, but sent an empty
+ * one), the products' currency and each product. sdk-shopify 0.15's `useCollectionPage` `onView` hands
+ * over exactly this shape.
+ */
+export declare function collectionViewParams(collection: {
+    handle: string;
+    title: string | null;
+    products: ProductForEvents[];
+}): EventProperties;
+/** `search`'s properties (0.3.2): the term searched and every match counted (sdk-shopify 0.15's `onSearched`). */
+export declare function searchParams(search: {
+    term: string;
+    totalCount: number;
+}): EventProperties;
 /** Which kind of show an add is credited to: on air, or its recording. The engine's wire values. */
 export type StreamType = 'live-stream' | 'replay';
 /** The show an add is credited to. */
@@ -152,12 +180,14 @@ export type ShopifyEventForAnalytics = {
     cart?: CartForEvents | null;
     changedLines?: CartLineChangeForEvents[];
     productId?: string;
-    /** The shows the cart holds units from, on sdk-shopify's `checkout:started` (0.14.0). */
+    /** The shows the cart holds units from, on sdk-shopify's `checkout:started` (0.14.0) and `checkout:completed` (0.15.0). */
     shows?: ShowsInCart;
+    /** On `checkout:completed` for a checkout of its own link (an auction's wins): what it was for. */
+    source?: string;
 };
 /**
  * The events the engine reported for a cart or wishlist change, in order, for an sdk-shopify event.
- * Anything else (sign-in, alerts, a placed order) is `[]`: sign-in is the app's to report, because it
+ * Anything else (sign-in, alerts, `checkout:orderPlaced`) is `[]`: sign-in is the app's to report, because it
  * depends on how the app signs shoppers in.
  *
  * - `cart:add`: for each line that grew, `updateCart` then `addToCart`, both with the line as it is now
@@ -170,6 +200,10 @@ export type ShopifyEventForAnalytics = {
  * - `checkout:started` (its `checkout.start()`): `initiateCheckout` with `checkoutParams`, then
  *   `streamCheckout` beside it when the cart holds a show's units (`shows`; Freckled Poppy's event).
  *   Both moved from amore-v2's Cart, which sent them itself (0.3.1).
+ * - `checkout:completed` (sdk-shopify 0.15.0's checkout page saw the order placed, with the cart as it
+ *   was): `purchase` with `purchaseParams`, then `streamPurchase` beside it for a show's units. A checkout
+ *   of its own link (no cart) sends `purchase` with its `source` alone (`auctionWins`). Moved from
+ *   amore-v2's Checkout page (0.3.2). `checkout:orderPlaced`, which every app raises its own way, stays `[]`.
  */
 export declare function cartAndWishlistEvents(event: ShopifyEventForAnalytics): EventToSend[];
 //# sourceMappingURL=eventParams.d.ts.map

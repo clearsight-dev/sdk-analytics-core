@@ -21,7 +21,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cartAndWishlistEvents = exports.streamPurchaseParams = exports.streamCheckoutParams = exports.cartHasShows = exports.showAddToCartEvent = exports.streamItemParams = exports.liveJoinParams = exports.waitlistParams = exports.authParams = exports.customCartParams = exports.cartQuantityParams = exports.purchaseParams = exports.checkoutParams = exports.lineItemParams = exports.cartCurrency = exports.productParams = exports.toItem = exports.trackProps = exports.DefaultEvents = exports.ApptileCoreEvents = void 0;
+exports.cartAndWishlistEvents = exports.streamPurchaseParams = exports.streamCheckoutParams = exports.cartHasShows = exports.showAddToCartEvent = exports.streamItemParams = exports.liveJoinParams = exports.searchParams = exports.collectionViewParams = exports.waitlistSubscriptionEvent = exports.waitlistParams = exports.authParams = exports.customCartParams = exports.cartQuantityParams = exports.purchaseParams = exports.checkoutParams = exports.lineItemParams = exports.cartCurrency = exports.productParams = exports.toItem = exports.trackProps = exports.DefaultEvents = exports.ApptileCoreEvents = void 0;
 __exportStar(require("./types"), exports);
 var events_1 = require("./events");
 Object.defineProperty(exports, "ApptileCoreEvents", { enumerable: true, get: function () { return events_1.ApptileCoreEvents; } });
@@ -43,6 +43,9 @@ Object.defineProperty(exports, "cartQuantityParams", { enumerable: true, get: fu
 Object.defineProperty(exports, "customCartParams", { enumerable: true, get: function () { return eventParams_1.customCartParams; } });
 Object.defineProperty(exports, "authParams", { enumerable: true, get: function () { return eventParams_1.authParams; } });
 Object.defineProperty(exports, "waitlistParams", { enumerable: true, get: function () { return eventParams_1.waitlistParams; } });
+Object.defineProperty(exports, "waitlistSubscriptionEvent", { enumerable: true, get: function () { return eventParams_1.waitlistSubscriptionEvent; } });
+Object.defineProperty(exports, "collectionViewParams", { enumerable: true, get: function () { return eventParams_1.collectionViewParams; } });
+Object.defineProperty(exports, "searchParams", { enumerable: true, get: function () { return eventParams_1.searchParams; } });
 Object.defineProperty(exports, "liveJoinParams", { enumerable: true, get: function () { return eventParams_1.liveJoinParams; } });
 Object.defineProperty(exports, "streamItemParams", { enumerable: true, get: function () { return eventParams_1.streamItemParams; } });
 Object.defineProperty(exports, "showAddToCartEvent", { enumerable: true, get: function () { return eventParams_1.showAddToCartEvent; } });
